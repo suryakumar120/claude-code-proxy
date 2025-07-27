@@ -1357,7 +1357,12 @@ async def create_message(
         # Check for LiteLLM-specific attributes
         for attr in ['message', 'status_code', 'response', 'llm_provider', 'model']:
             if hasattr(e, attr):
-                error_details[attr] = getattr(e, attr)
+                value = getattr(e, attr)
+                try:
+                    json.dumps(value)
+                    error_details[attr] = value
+                except (TypeError, ValueError):
+                    error_details[attr] = str(value)
         
         # Check for additional exception details in dictionaries
         if hasattr(e, '__dict__'):
